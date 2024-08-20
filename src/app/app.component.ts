@@ -1,5 +1,5 @@
 import { ListaDeCompraService } from './service/lista-de-compra.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, DoCheck, OnInit } from '@angular/core';
 import { Item } from './interfaces/iItem';
 
 @Component({
@@ -7,12 +7,16 @@ import { Item } from './interfaces/iItem';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, DoCheck {
   title = 'app-lista-de-compras';
   listaDeCompra!: Array<Item>;
   itemParaSerEditado!: Item;
 
   constructor(private ListaDeCompraService: ListaDeCompraService) {}
+
+  ngDoCheck(): void {
+    this.ListaDeCompraService.atualizarLocalStorage();
+  }
 
   ngOnInit(): void {
     this.listaDeCompra = this.ListaDeCompraService.getListaDeCompra();
@@ -20,5 +24,14 @@ export class AppComponent implements OnInit {
 
   editarItem(item: Item) {
     this.itemParaSerEditado = item;
+  }
+
+  deletarItem(id: number) {
+    const index = this.listaDeCompra.findIndex((item) => item.id === id);
+    this.listaDeCompra.splice(index, 1);
+  }
+
+  limparLista() {
+    this.listaDeCompra = [];
   }
 }
